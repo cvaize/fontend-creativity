@@ -1,1 +1,1 @@
-{"version":3,"sources":["../test3.scss","test1.scss"],"names":[],"mappings":"AACA,UACI,SAAO,CCCX,UACI,SAAO","file":"../test1.css","sourcesContent":["\n.box-item{\n    color: red;\n}\n\n","@import \"../import\";\n@import \"../test3\";\n\n.box-item{\n    color: red;\n}\n\n"]}
+{"version":3,"sources":["test1.scss"],"names":[],"mappings":"AAEA,UACI,SAAO","file":"../test1.css","sourcesContent":["@import \"../import\";\n\n.box-item{\n    color: red;\n}\n\n"]}

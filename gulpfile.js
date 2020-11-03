@@ -16,6 +16,7 @@ const sourcemaps = require('gulp-sourcemaps');
 const minifyCss = require('gulp-clean-css');
 const rollup = require('gulp-better-rollup');
 const babel = require('rollup-plugin-babel');
+const watchInclude = require('./gulp-watch-include');
 const manifest = require('./gulp-manifest');
 const throughCallback = require('./gulp-through-callback');
 const browserSync = require('browser-sync').create();
@@ -185,8 +186,32 @@ gulp.task('sass:watch', function () {
             combineSass(gulp.src(scssWatchFiles[vinyl.path].components));
         }
     }
+
     combineSass(gulp.src(srcScssPathWithExt).pipe(throughCallback(watchCallback)));
 
     watchInstance = watch(srcScssPathWithExt, {ignoreInitial: true}, watchCallback)
     return watchInstance;
+});
+
+gulp.task('scss:js:watch', function () {
+    return watchInclude({
+        output: (pipe)=>{
+            combineSass(pipe)
+        },
+        getIncludePaths: (filepath, cb)=>{
+            // filepath - путь к файлу у, которого нужно узнать зависимости
+            if(filepath.includes('.scss')){
+                sass.compiler.render({
+                    file: filepath,
+                    importer: magicImporter(),
+                    includePaths: ['node_modules'],
+                }, function(err, result) {
+                    cb(result.stats.includedFiles.filter(includedFile => !includedFile.includes('node_modules') && !includedFile.includes(srcScssPath)))
+                })
+            }else{
+                cb([])
+            }
+        },
+        watchPaths: [srcScssPathWithExt]
+    });
 });
