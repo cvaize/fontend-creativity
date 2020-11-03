@@ -206,7 +206,7 @@ gulp.task('scss:js:watch', function () {
                     importer: magicImporter(),
                     includePaths: ['node_modules'],
                 }, function(err, result) {
-                    cb(result.stats.includedFiles.filter(includedFile => !includedFile.includes('node_modules') && !includedFile.includes(srcScssPath)))
+                    cb(result.stats.includedFiles.filter(includedFile => !includedFile.includes('node_modules') && !includedFile.includes(filepath)))
                 })
             }else{
                 cb([])

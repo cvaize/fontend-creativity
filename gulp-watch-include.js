@@ -65,53 +65,64 @@ const plugin = ({getIncludePaths, watchPaths, output}) => {
         add(currentPath, type === 'init')
         unwatch(currentPath)
 
-        getIncludePaths(currentPath, (includePaths)=>{
-            let unwatchPaths = _.difference(graph, includePaths); // Файлы, которые нужно исключить из связей текущего файла, а текущий файл из их связей этих файлов
-
-            graph[currentPath] = includePaths; // Применил текущие связи для текущего файла
-
-            for (let i = 0; i < includePaths.length; i++) {
-                let includePath = includePaths[i];
-                if(!includePath){
-                    continue;
-                }
-                if(!graph[includePath]){
-                    graph[includePath] = []
-                }
-                if(!graph[includePath].includes(currentPath)){
-                    graph[includePath].push(currentPath)
-                }
-                add(includePath)
-            }
-
-            // Исключаю текущий файл из связи других файлов
-            for (let i = 0; i < unwatchPaths.length; i++) {
-                let unwatchPath = unwatchPaths[i];
-                if(!unwatchPath){
-                    continue;
-                }
-                if(graph[unwatchPath]){
-                    _.pull(graph[unwatchPath], currentPath)
-                }
-                unwatch(unwatchPath)
-            }
-        })
-
         if(checkInWatchPaths(currentPath)){
+
+            // Тут нужна рекурсия для погружения в зависимости
+            getIncludePaths(currentPath, (includePaths)=>{
+                let unwatchPaths = _.difference(graph, includePaths); // Файлы, которые нужно исключить из связей текущего файла, а текущий файл из их связей этих файлов
+
+                graph[currentPath] = includePaths; // Применил текущие связи для текущего файла
+
+                for (let i = 0; i < includePaths.length; i++) {
+                    let includePath = includePaths[i];
+                    if(!includePath){
+                        continue;
+                    }
+                    if(!graph[includePath]){
+                        graph[includePath] = []
+                    }
+                    if(!graph[includePath].includes(currentPath)){
+                        graph[includePath].push(currentPath)
+                    }
+                    add(includePath)
+                }
+
+                // Исключаю текущий файл из связи других файлов
+                for (let i = 0; i < unwatchPaths.length; i++) {
+                    let unwatchPath = unwatchPaths[i];
+                    if(!unwatchPath){
+                        continue;
+                    }
+                    if(graph[unwatchPath]){
+                        _.pull(graph[unwatchPath], currentPath)
+                    }
+                    unwatch(unwatchPath)
+                }
+                if(graph[currentPath]){
+                    for (let i = 0; i < graph[currentPath].length; i++) {
+                        let graphPath = graph[currentPath][i]
+                        if(checkInWatchPaths(graphPath)){
+                            output(gulp.src(graphPath))
+                        }
+                    }
+                }
+            })
+
             output(gulp.src(currentPath))
-        }
-        if(graph[currentPath]){
-            for (let i = 0; i < graph[currentPath].length; i++) {
-                let graphPath = graph[currentPath][i]
-                if(checkInWatchPaths(graphPath)){
-                    output(gulp.src(graphPath))
+        }else{
+            if(graph[currentPath]){
+                for (let i = 0; i < graph[currentPath].length; i++) {
+                    let graphPath = graph[currentPath][i]
+                    if(checkInWatchPaths(graphPath)){
+                        output(gulp.src(graphPath))
+                    }
                 }
             }
         }
     }
 
     watchInstance = watch(watchPaths, {ignoreInitial: true}, worker)
-        output(gulp.src(watchPaths).pipe(throughCallback(worker)))
+    output(gulp.src(watchPaths).pipe(throughCallback(worker)))
     return watchInstance;
 };
 
