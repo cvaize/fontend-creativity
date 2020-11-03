@@ -1,0 +1,20 @@
+@import "../import";
+
+.footer-index{
+    height: 50px;
+    line-height: 50px;
+    vertical-align: middle;
+    background: lightskyblue;
+    text-align: center;
+    color: red;
+    b{
+        color: black;
+    }
+    a{
+        color: inherit;
+        text-decoration: underline;
+        &:hover{
+            color: darken($link-color, 15%);
+        }
+    }
+}

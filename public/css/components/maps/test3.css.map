@@ -1,0 +1,1 @@
+{"version":3,"sources":["../test.css","test3.scss"],"names":[],"mappings":"AAAA,MACI,SAAO,CCEX,UACI,SAAO","file":"../test3.css","sourcesContent":[".test{\n    color: red;\n}\n","@import \"../import\";\n@import \"../test.css\";\n\n.box-item{\n    color: red;\n}\n\n"]}
