@@ -5,6 +5,7 @@ const {terser} = require('rollup-plugin-terser');
 const path = require('path');
 const gulp = require('gulp');
 const sass = require('gulp-sass');
+const detective = require('detective-es6');
 const magicImporter = require('node-sass-magic-importer');
 const using = require('gulp-using');
 const autoprefixer = require('gulp-autoprefixer');
@@ -58,6 +59,7 @@ function combineJs(input){
             // Rollups `sourcemap` option is unsupported. Use `gulp-sourcemaps` plugin instead
             format: 'cjs',
         }))
+        .pipe(using({color: 'green'}))
         // inlining the sourcemap into the exported .js file
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(destJsPath)) // write js to build dir
@@ -65,6 +67,49 @@ function combineJs(input){
             path: 'mix-manifest.json',
             publicPath: './public'
         }))
+}
+
+function watchJs(){
+    return watchInclude({
+        output: (pipe)=>{
+            combineJs(pipe)
+        },
+        getIncludePaths: ({filepath, file}, cb)=>{
+            // filepath - путь к файлу у, которого нужно узнать зависимости
+            if(filepath.includes('.js')){
+                let dirname = path.dirname(file.path)
+                let dependencies = detective(file.contents.toString())
+                    .filter(value => /^\./g.test(value))
+                    .map(value => path.join(dirname, (/\.js$/g.test(value)?value:value+'.js')))
+                cb(dependencies)
+            }else{
+                cb([])
+            }
+        },
+        watchPaths: [srcJsPath]
+    });
+}
+function watchSass(){
+    return watchInclude({
+        output: (pipe)=>{
+            combineSass(pipe)
+        },
+        getIncludePaths: ({filepath}, cb)=>{
+            // filepath - путь к файлу у, которого нужно узнать зависимости
+            if(filepath.includes('.scss')){
+                sass.compiler.render({
+                    file: filepath,
+                    importer: magicImporter(),
+                    includePaths: ['node_modules'],
+                }, function(err, result) {
+                    cb(result.stats.includedFiles.filter(includedFile => !includedFile.includes('node_modules') && !includedFile.includes(filepath)))
+                })
+            }else{
+                cb([])
+            }
+        },
+        watchPaths: [srcScssPath]
+    });
 }
 
 gulp.task('js', function () {
@@ -77,47 +122,14 @@ gulp.task('sass', function () {
 
 
 gulp.task('sass:watch', function () {
-    return watchInclude({
-        output: (pipe)=>{
-            combineSass(pipe)
-        },
-        getIncludePaths: (filepath, cb)=>{
-            // filepath - путь к файлу у, которого нужно узнать зависимости
-            if(filepath.includes('.scss')){
-                sass.compiler.render({
-                    file: filepath,
-                    importer: magicImporter(),
-                    includePaths: ['node_modules'],
-                }, function(err, result) {
-                    cb(result.stats.includedFiles.filter(includedFile => !includedFile.includes('node_modules') && !includedFile.includes(filepath)))
-                })
-            }else{
-                cb([])
-            }
-        },
-        watchPaths: [srcScssPath]
-    });
+    return watchSass();
+});
+
+
+gulp.task('js:watch', function () {
+    return watchJs();
 });
 
 gulp.task('sass:js:watch', function () {
-    return watchInclude({
-        output: (pipe)=>{
-            combineSass(pipe)
-        },
-        getIncludePaths: (filepath, cb)=>{
-            // filepath - путь к файлу у, которого нужно узнать зависимости
-            if(filepath.includes('.scss')){
-                sass.compiler.render({
-                    file: filepath,
-                    importer: magicImporter(),
-                    includePaths: ['node_modules'],
-                }, function(err, result) {
-                    cb(result.stats.includedFiles.filter(includedFile => !includedFile.includes('node_modules') && !includedFile.includes(filepath)))
-                })
-            }else{
-                cb([])
-            }
-        },
-        watchPaths: [srcScssPath]
-    });
+    return [watchJs(), watchSass()];
 });

@@ -1,3 +1,2 @@
-const magicImporter = require('node-sass-magic-importer');
-
-console.log(magicImporter()('resources/sass/components/box-item.scss'))
+let value = '../names/box-item';
+console.log(/\.js$/g.test(value)?value:value+'.js')

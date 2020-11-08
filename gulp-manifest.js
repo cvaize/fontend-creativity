@@ -2,10 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const through = require('through2');
-const vinylFile = require('vinyl-file');
 const crypto = require('crypto');
-const sortKeys = require('sort-keys');
-const Vinyl = require('vinyl');
 
 function hash(input) {
     if (typeof input !== 'string' && !Buffer.isBuffer(input)) {
@@ -14,14 +11,6 @@ function hash(input) {
 
     return crypto.createHash('md5').update(input).digest('hex');
 }
-
-const getManifestFile = opts => vinylFile.read(opts.path, opts).catch(error => {
-    if (error.code === 'ENOENT') {
-        return new Vinyl(opts);
-    }
-
-    throw error;
-});
 
 
 const plugin = (pth, opts) => {

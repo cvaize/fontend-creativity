@@ -62,10 +62,14 @@
         "vue-template-compiler": "^2.6.11"
     },
     "dependencies": {
+        "@babel/core": "^7.12.3",
         "bootstrap": "^4.5.0",
         "browser-sync": "^2.26.13",
         "chokidar": "^3.4.3",
+        "detective-es6": "^2.2.0",
+        "get-dependencies": "^1.1.0",
         "gulp-autoprefixer": "^7.0.1",
+        "gulp-babel": "^8.0.0",
         "gulp-better-rollup": "^4.0.1",
         "gulp-clean-css": "^4.3.0",
         "gulp-sass-import-once": "^2.0.2",

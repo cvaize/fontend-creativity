@@ -13,35 +13,35 @@ const Case = require('case')
  |
  */
 
-// mix
-//     .js('resources/js/app/index.js', 'public/js/app.js')
+mix
+    .js('resources/js/app.js', 'public/js/app.js')
 //     .sass('resources/sass/app.scss', 'public/css/app.css');
-
-let files = fs.readdirSync('./resources/js/components');
-let names = fs.readdirSync('./resources/js/names');
+if(false){
+    let files = fs.readdirSync('./resources/js/components');
+    let names = fs.readdirSync('./resources/js/names');
 //Создание файлов с названиями
-files.forEach(function (file) {
-    if (file.indexOf('.js') !== -1) {
-        if(names.indexOf(file) === -1){
-            let name = Case.camel('appComponent_'+file.replace('.js', ''));
-            fs.writeFileSync('./resources/js/names/'+file, `export default '${name}';`);
+    files.forEach(function (file) {
+        if (file.indexOf('.js') !== -1) {
+            if(names.indexOf(file) === -1){
+                let name = Case.camel('appComponent_'+file.replace('.js', ''));
+                fs.writeFileSync('./resources/js/names/'+file, `export default '${name}';`);
+            }
         }
-    }
-});
+    });
 //Удаление старых файлов с названиями
-names.forEach(function (name) {
-    if (name.indexOf('.js') !== -1) {
-        if(files.indexOf(name) === -1){
-            fs.unlinkSync('./resources/js/names/'+name);
+    names.forEach(function (name) {
+        if (name.indexOf('.js') !== -1) {
+            if(files.indexOf(name) === -1){
+                fs.unlinkSync('./resources/js/names/'+name);
+            }
         }
-    }
-});
+    });
 //Обработка JS
-files.forEach(function (file) {
-    if (file.indexOf('.js') !== -1) {
-        mix.js(`resources/js/components/${file}`, `public/js/components/`);
-    }
-})
+    files.forEach(function (file) {
+        if (file.indexOf('.js') !== -1) {
+            mix.js(`resources/js/components/${file}`, `public/js/components/`);
+        }
+    })
 
 
 //Обработка css
@@ -51,27 +51,29 @@ files.forEach(function (file) {
 //     }
 // })
 
-if (true) {
-    mix.version();
-}
-if (false) {
-    let domen = 'example.ru'
-    mix.browserSync({
-        proxy:  // проксирование вашего удаленного сервера, не важно на чем back-end
-            {
-                target: `http://${domen}/`,
-                ws: true
-            },
-        logPrefix: domen, // префикс для лога bs, маловажная настройка
-        host: domen, // можно использовать ip сервера
-        port: 3000, // порт через который будет проксироваться сервер
-        // open: 'external', // указываем, что наш url внешний
-        notify: false,
-        ghost: true,
-        // httpModule: 'http2',
-        // https: {
-        //     key: "./ssl/privkey.pem",
-        //     cert: "./ssl/fullchain.pem",
-        // },
-    });
+    if (true) {
+        mix.version();
+    }
+    if (false) {
+        let domen = 'example.ru'
+        mix.browserSync({
+            proxy:  // проксирование вашего удаленного сервера, не важно на чем back-end
+                {
+                    target: `http://${domen}/`,
+                    ws: true
+                },
+            logPrefix: domen, // префикс для лога bs, маловажная настройка
+            host: domen, // можно использовать ip сервера
+            port: 3000, // порт через который будет проксироваться сервер
+            // open: 'external', // указываем, что наш url внешний
+            notify: false,
+            ghost: true,
+            // httpModule: 'http2',
+            // https: {
+            //     key: "./ssl/privkey.pem",
+            //     cert: "./ssl/fullchain.pem",
+            // },
+        });
+    }
+
 }

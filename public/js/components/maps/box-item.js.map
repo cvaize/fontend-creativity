@@ -1,0 +1,1 @@
+{"version":3,"file":"../box-item.js","sources":["resources/js/components/box-item.js"],"sourcesContent":["import name from '../names/box-item'\n\nconsole.log('Hello from box-item.js'+name);\n"],"names":["console","log"],"mappings":"aAEAA,QAAQC,IAAI"}

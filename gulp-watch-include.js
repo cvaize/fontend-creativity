@@ -68,7 +68,7 @@ const plugin = ({getIncludePaths, watchPaths, output}) => {
         if(checkInWatchPaths(currentPath)){
 
             // Тут нужна рекурсия для погружения в зависимости
-            getIncludePaths(currentPath, (includePaths)=>{
+            getIncludePaths({filepath: currentPath, file}, (includePaths)=>{
                 let unwatchPaths = _.difference(graph, includePaths); // Файлы, которые нужно исключить из связей текущего файла, а текущий файл из их связей этих файлов
 
                 graph[currentPath] = includePaths; // Применил текущие связи для текущего файла
