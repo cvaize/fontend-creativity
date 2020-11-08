@@ -45,11 +45,9 @@ function combineSass(input){
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(destCssPath))  // write css to build dir
         .pipe(manifest({
-            public: destCssPath.replace(publicPath, ''),
             path: 'mix-manifest.json',
-            merge: true // Merge with the existing manifest if one exists
-        }))
-        .pipe(gulp.dest(destCssPath));  // write manifest to build dir
+            publicPath: './public'
+}))
 }
 
 // https://www.npmjs.com/package/gulp-better-rollup
@@ -71,11 +69,9 @@ function combineJs(input){
         .pipe(sourcemaps.write('./maps'))
         .pipe(gulp.dest(destJsPath)) // write js to build dir
         .pipe(manifest({
-            public: destCssPath.replace(publicPath, ''),
             path: 'mix-manifest.json',
-            merge: true // Merge with the existing manifest if one exists
+            publicPath: './public'
         }))
-        .pipe(gulp.dest(destJsPath));  // write manifest to build dir
 }
 
 gulp.task('js', function () {

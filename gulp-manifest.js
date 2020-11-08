@@ -1,4 +1,5 @@
 'use strict';
+const fs = require('fs');
 const path = require('path');
 const through = require('through2');
 const vinylFile = require('vinyl-file');
@@ -30,12 +31,10 @@ const plugin = (pth, opts) => {
 
     opts = Object.assign({
         path: 'manifest.json',
-        public: '',
-        merge: false,
-        transformer: JSON
+        transformer: JSON,
+        publicPath: './',
+        cwd: process.cwd()
     }, opts, pth);
-
-    let manifest = {};
 
     return through.obj((file, enc, cb) => {
 
@@ -44,37 +43,33 @@ const plugin = (pth, opts) => {
             return;
         }
         const extname = path.extname(file.path)
-
         if (extname === '.map') {
             cb();
             return;
         }
-        const originalFile = path.join(opts.public, path.basename(file.path)).replace(/\\/g, '/');
+
+        let manifest = {};
+
+        const dirname = path.dirname(file.path)
+        const basename = path.basename(file.path)
+        const manifestPath = path.join(dirname, opts.path).replace(/\\/g, '/');
+        const publicPath = path.join(opts.cwd, opts.publicPath).replace(/\/$/g, '')
+        const originalFile = path.join(dirname, basename).replace(/\\/g, '/').replace(publicPath, '');
 
         manifest[originalFile] = originalFile+'?id='+hash(file.contents);
-        cb();
-    }, function (cb) {
-        // No need to write a manifest file if there's nothing to manifest
-        if (Object.keys(manifest).length === 0) {
-            cb();
-            return;
-        }
 
-        getManifestFile(opts).then(manifestFile => {
-            if (opts.merge && !manifestFile.isNull()) {
-                let oldManifest = {};
-
-                try {
-                    oldManifest = opts.transformer.parse(manifestFile.contents.toString());
-                } catch (_) {}
-
-                manifest = Object.assign(oldManifest, manifest);
+        let oldManifest = {}
+        try {
+            if(fs.existsSync(manifestPath)){
+                oldManifest = opts.transformer.parse(fs.readFileSync(manifestPath, 'utf-8'))
             }
+        } catch (_) {}
 
-            manifestFile.contents = Buffer.from(opts.transformer.stringify(sortKeys(manifest), null, '  '));
-            this.push(manifestFile);
-            cb();
-        }).catch(cb);
+        manifest = Object.assign(oldManifest, manifest);
+
+        fs.writeFileSync(manifestPath, opts.transformer.stringify(manifest,null,2))
+
+        cb();
     });
 };
 

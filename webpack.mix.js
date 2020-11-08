@@ -45,11 +45,11 @@ files.forEach(function (file) {
 
 
 //Обработка css
-fs.readdirSync('./resources/sass/components').forEach(function (file) {
-    if (file.indexOf('.scss') !== -1) {
-        mix.sass(`resources/sass/components/${file}`, `public/css/components/`);
-    }
-})
+// fs.readdirSync('./resources/sass/components').forEach(function (file) {
+//     if (file.indexOf('.scss') !== -1) {
+//         mix.sass(`resources/sass/components/${file}`, `public/css/components/`);
+//     }
+// })
 
 if (true) {
     mix.version();

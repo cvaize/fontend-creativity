@@ -1,1 +1,1 @@
-{"version":3,"sources":["box-item.scss"],"names":[],"mappings":"AAEA,UACI,SAAO","file":"../box-item.css","sourcesContent":["@import \"../import\";\n\n.box-item{\n    color: red;\n}\n\n"]}
+{"version":3,"sources":["box-item.scss"],"names":[],"mappings":"AAEA,UACI,WAAO","file":"../box-item.css","sourcesContent":["@import \"../import\";\n\n.box-item{\n    color: green;\n}\n\n"]}
